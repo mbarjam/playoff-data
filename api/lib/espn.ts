@@ -61,7 +61,9 @@ export async function fetchPlayoffGames(
   week?: number
 ): Promise<EspnGame[]> {
   const weekParam = week ? `&week=${week}` : "";
-  const url = `${ESPN_BASE}/scoreboard?seasontype=3&season=${seasonYear}${weekParam}&limit=50`;
+  // Note: do NOT include &season= param — it causes a 500 on ESPN's API.
+  // The API defaults to the current season automatically.
+  const url = `${ESPN_BASE}/scoreboard?seasontype=3${weekParam}&limit=50`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`ESPN scoreboard fetch failed: ${res.status}`);
   const data = await res.json() as { events?: EspnGame[] };
@@ -72,14 +74,17 @@ export async function fetchPlayoffGames(
  * Returns all unique teams that appear in playoff games.
  * Includes conference seeding from standings if available.
  */
-export async function fetchPlayoffTeams(seasonYear = 2025): Promise<EspnTeam[]> {
-  const games = await fetchPlayoffGames(seasonYear);
+export async function fetchPlayoffTeams(_seasonYear = 2025): Promise<EspnTeam[]> {
+  // Query all weeks to capture bye-week teams that skip Wild Card (week 1).
   const seen = new Map<string, EspnTeam>();
-  for (const game of games) {
-    for (const comp of game.competitions) {
-      for (const competitor of comp.competitors) {
-        if (!seen.has(competitor.team.id)) {
-          seen.set(competitor.team.id, competitor.team);
+  for (const week of [1, 2, 3, 5]) {
+    const games = await fetchPlayoffGames(_seasonYear, week);
+    for (const game of games) {
+      for (const comp of game.competitions) {
+        for (const competitor of comp.competitors) {
+          if (!seen.has(competitor.team.id)) {
+            seen.set(competitor.team.id, competitor.team);
+          }
         }
       }
     }

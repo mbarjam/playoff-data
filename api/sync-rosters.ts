@@ -59,13 +59,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const depthChart = await fetchDepthChart(team.espn_id, seasonYear);
 
         for (const [position, maxCount] of Object.entries(TARGET_POSITIONS)) {
-          const depthIds = depthChart.get(position) ?? [];
+          // ESPN uses "PK" for kickers in depth charts/rosters; we store as "K"
+          const espnPos = position === "K" ? "PK" : position;
+          const depthIds = depthChart.get(espnPos) ?? depthChart.get(position) ?? [];
 
           // If depth chart has entries, use them; otherwise fall back to roster order
           const candidates =
             depthIds.length > 0
               ? depthIds.map((id) => rosterById.get(id)).filter(Boolean)
-              : roster.filter((a) => a.position.abbreviation.toUpperCase() === position);
+              : roster.filter((a) => {
+                  const abbr = a.position.abbreviation.toUpperCase();
+                  return abbr === espnPos || abbr === position;
+                });
 
           const selected = candidates.slice(0, maxCount);
 
