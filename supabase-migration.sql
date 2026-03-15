@@ -55,20 +55,19 @@ ALTER TABLE public.sync_schedule  ENABLE ROW LEVEL SECURITY;
 --    Allow authenticated users to read (for the admin UI to display data).
 --    Writes go through the service role key in the API functions.
 
-CREATE POLICY "Allow authenticated read playoff_teams"
-  ON public.playoff_teams FOR SELECT
-  TO authenticated USING (true);
-
-CREATE POLICY "Allow authenticated read sync_log"
-  ON public.sync_log FOR SELECT
-  TO authenticated USING (true);
-
-CREATE POLICY "Allow authenticated read sync_schedule"
-  ON public.sync_schedule FOR SELECT
-  TO authenticated USING (true);
-
-CREATE POLICY "Allow authenticated update sync_schedule"
-  ON public.sync_schedule FOR UPDATE
-  TO authenticated USING (true);
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'playoff_teams' AND policyname = 'Allow authenticated read playoff_teams') THEN
+    CREATE POLICY "Allow authenticated read playoff_teams" ON public.playoff_teams FOR SELECT TO authenticated USING (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'sync_log' AND policyname = 'Allow authenticated read sync_log') THEN
+    CREATE POLICY "Allow authenticated read sync_log" ON public.sync_log FOR SELECT TO authenticated USING (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'sync_schedule' AND policyname = 'Allow authenticated read sync_schedule') THEN
+    CREATE POLICY "Allow authenticated read sync_schedule" ON public.sync_schedule FOR SELECT TO authenticated USING (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'sync_schedule' AND policyname = 'Allow authenticated update sync_schedule') THEN
+    CREATE POLICY "Allow authenticated update sync_schedule" ON public.sync_schedule FOR UPDATE TO authenticated USING (true);
+  END IF;
+END $$;
 
 -- Done.
