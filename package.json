@@ -8,7 +8,10 @@
     "dev:vercel": "vercel dev",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sync:teams": "node scripts/sync-teams.mjs",
+    "sync:rosters": "node scripts/sync-rosters.mjs",
+    "sync:stats": "node scripts/sync-stats.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
