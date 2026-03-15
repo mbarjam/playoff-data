@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 20% 7%;
+    --foreground: 0 0% 95%;
+
+    --card: 220 18% 11%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 220 18% 11%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 142 72% 50%;
+    --primary-foreground: 220 20% 7%;
+
+    --secondary: 220 16% 18%;
+    --secondary-foreground: 0 0% 85%;
+
+    --muted: 220 14% 15%;
+    --muted-foreground: 220 10% 55%;
+
+    --accent: 38 92% 55%;
+    --accent-foreground: 220 20% 7%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 95%;
+
+    --border: 220 14% 18%;
+    --input: 220 14% 18%;
+    --ring: 142 72% 50%;
+
+    --radius: 0.75rem;
+
+    --positive: 142 72% 50%;
+    --negative: 0 72% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
