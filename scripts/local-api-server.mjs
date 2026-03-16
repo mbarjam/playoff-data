@@ -132,34 +132,38 @@ async function syncStats(week) {
       const homeTeamId = competitors.find((c) => c.homeAway === "home")?.team.id;
       const awayTeamId = competitors.find((c) => c.homeAway === "away")?.team.id;
 
-      let playerCount = 0;
+      const statsByPlayer = new Map();
       for (const teamData of data.boxscore?.players ?? []) {
         for (const category of teamData.statistics ?? []) {
           for (const entry of category.athletes ?? []) {
             const player = playerByEspnId.get(entry.athlete.id);
             if (!player || player.position === "DEF") continue;
-            const statsMap = {};
+            const existing = statsByPlayer.get(player.id) ?? {};
             category.keys.forEach((key, i) => {
-              statsMap[`${category.name}.${key}`] = entry.stats[i] ?? "0";
+              existing[`${category.name}.${key}`] = entry.stats[i] ?? "0";
             });
-            const mapped = mapPlayerStats(statsMap);
-            statRows.push({
-              player_id: player.id, week,
-              pass_yds: mapped.pass_yds, pass_tds: mapped.pass_tds,
-              interceptions_thrown: mapped.interceptions_thrown, sacks_taken: mapped.sacks_taken,
-              rush_yds: mapped.rush_yds, rush_tds: mapped.rush_tds,
-              rec_yds: mapped.rec_yds, rec_tds: mapped.rec_tds,
-              fumbles_lost: mapped.fumbles_lost, xp_made: mapped.xp_made,
-              xp_missed: mapped.xp_missed, fg_0_39: mapped.fg_0_39,
-              fg_40_49: mapped.fg_40_49, fg_50_plus: mapped.fg_50_plus,
-              return_tds: 0, fumble_rec_tds: 0, two_pt_conversions: 0,
-              def_st_tds: 0, def_interceptions: 0, fumble_recoveries: 0,
-              blocked_kicks: 0, safeties: 0, pat_safeties: 0,
-              def_sacks: 0, yards_allowed: 0, points_allowed: 0,
-            });
-            playerCount++;
+            statsByPlayer.set(player.id, existing);
           }
         }
+      }
+      let playerCount = 0;
+      for (const [playerId, statsMap] of statsByPlayer) {
+        const mapped = mapPlayerStats(statsMap);
+        statRows.push({
+          player_id: playerId, week,
+          pass_yds: mapped.pass_yds, pass_tds: mapped.pass_tds,
+          interceptions_thrown: mapped.interceptions_thrown, sacks_taken: mapped.sacks_taken,
+          rush_yds: mapped.rush_yds, rush_tds: mapped.rush_tds,
+          rec_yds: mapped.rec_yds, rec_tds: mapped.rec_tds,
+          fumbles_lost: mapped.fumbles_lost, xp_made: mapped.xp_made,
+          xp_missed: mapped.xp_missed, fg_0_39: mapped.fg_0_39,
+          fg_40_49: mapped.fg_40_49, fg_50_plus: mapped.fg_50_plus,
+          return_tds: 0, fumble_rec_tds: 0, two_pt_conversions: 0,
+          def_st_tds: 0, def_interceptions: 0, fumble_recoveries: 0,
+          blocked_kicks: 0, safeties: 0, pat_safeties: 0,
+          def_sacks: 0, yards_allowed: 0, points_allowed: 0,
+        });
+        playerCount++;
       }
 
       for (const teamEspnId of teamIds) {
