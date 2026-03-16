@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "sync:teams": "node scripts/sync-teams.mjs",
     "sync:rosters": "node scripts/sync-rosters.mjs",
-    "sync:stats": "node scripts/sync-stats.mjs"
+    "sync:stats": "node scripts/sync-stats.mjs",
+    "dev:local": "node scripts/local-api-server.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
