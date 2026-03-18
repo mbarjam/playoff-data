@@ -12,6 +12,7 @@
     "sync:teams": "node scripts/sync-teams.mjs",
     "sync:rosters": "node scripts/sync-rosters.mjs",
     "sync:rosters-from-boxscores": "node scripts/sync-rosters-from-boxscores.mjs",
+    "seed:players": "node scripts/seed-csv-players.mjs",
     "sync:stats": "node scripts/sync-stats.mjs",
     "dev:local": "node scripts/local-api-server.mjs"
   },
